@@ -7,11 +7,19 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 import warnings
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-import joblib
+
+# Import scikit-learn with fallback
+try:
+    from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
+    from sklearn.preprocessing import StandardScaler, LabelEncoder
+    import joblib
+    SKLEARN_AVAILABLE = True
+except ImportError:
+    SKLEARN_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.warning("scikit-learn not available. Using fallback implementations.")
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +77,7 @@ class ChurnAnalyzer:
         # Initialize ML model (in production, this would be pre-trained)
         self.model = None
         self.feature_importance = {}
-        self.scaler = StandardScaler()
+        self.scaler = StandardScaler() if SKLEARN_AVAILABLE else None
         
     def analyze_churn_risk(self) -> Dict[str, Any]:
         """

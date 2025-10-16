@@ -6,8 +6,16 @@ from datetime import datetime, timedelta
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
+
+# Import scikit-learn with fallback
+try:
+    from sklearn.cluster import KMeans
+    from sklearn.preprocessing import StandardScaler
+    SKLEARN_AVAILABLE = True
+except ImportError:
+    SKLEARN_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.warning("scikit-learn not available. Using fallback implementations.")
 
 logger = logging.getLogger(__name__)
 
