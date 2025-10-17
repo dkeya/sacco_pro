@@ -14,6 +14,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from sacco_core.config import ConfigManager
 from sacco_core.rbac import RBACManager
 from sacco_core.audit import AuditLogger
+from sacco_core.sidebar import render_sidebar
 
 # Page configuration
 st.set_page_config(
@@ -21,6 +22,14 @@ st.set_page_config(
     page_icon="📊",
     layout="wide"
 )
+
+# Check authentication and render sidebar
+if not st.session_state.get('authenticated', False):
+    st.error("🔐 Please log in to access this page")
+    st.stop()
+
+# Render consistent sidebar and styling
+render_sidebar()
 
 class OverviewPage:
     def __init__(self):
@@ -209,7 +218,7 @@ class OverviewPage:
     
     def run(self):
         """Run the overview page"""
-        st.title("SACCO Performance Overview")
+        st.title("📊 SACCO Performance Overview")
         
         # Render all components
         self.render_kpi_cards()

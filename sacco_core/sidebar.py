@@ -1,20 +1,24 @@
 # sacco_core/sidebar.py
 import streamlit as st
 from datetime import datetime
-from .rbac import RBACManager
 from .audit import AuditLogger
+from .ui import hide_default_streamlit_elements, apply_custom_styling
 
 def render_sidebar():
-    """Render consistent sidebar across all pages"""
+    """Render consistent sidebar across all pages with collapsible categories"""
     
-    # Hide Streamlit's default navigation
-    st.markdown("""
-    <style>
-        [data-testid="stSidebarNav"] {
-            display: none !important;
+    # Apply consistent styling
+    hide_default_streamlit_elements()
+    apply_custom_styling()
+    
+    # Initialize session state for collapsed categories
+    if 'sidebar_collapsed' not in st.session_state:
+        st.session_state.sidebar_collapsed = {
+            "📊 Analytics": True,
+            "🎯 Risk Management": True,
+            "⏱️ Operations": True,
+            "🔒 Compliance & Security": True
         }
-    </style>
-    """, unsafe_allow_html=True)
     
     with st.sidebar:
         # User info section
@@ -29,27 +33,64 @@ def render_sidebar():
         st.markdown("---")
         st.subheader("📊 Navigation")
         
-        # Get page categories
-        page_categories = get_page_categories()
-        
         # Display Home/Dashboard button
         if st.button("🏠 Dashboard Home", use_container_width=True, key="nav_home"):
             st.switch_page("app.py")
         
         st.markdown("---")
         
-        # Display categorized pages
+        # Get page categories
+        page_categories = get_page_categories()
+        
+        # Display collapsible categories
         for category_name, pages in page_categories.items():
-            st.markdown(f"**{category_name}**")
-            for page in pages:
+            # Create a unique key for each category toggle
+            toggle_key = f"toggle_{category_name.replace(' ', '_').replace('&', 'and')}"
+            
+            # Toggle button with arrow indicator
+            col1, col2 = st.columns([3, 1])
+            with col1:
                 if st.button(
-                    page['name'], 
-                    key=f"nav_{page['module']}", 
+                    f"{category_name}", 
+                    key=toggle_key,
                     use_container_width=True,
-                    help=f"Go to {page['name']}"
+                    help=f"Click to {'expand' if st.session_state.sidebar_collapsed[category_name] else 'collapse'} {category_name}"
                 ):
-                    st.switch_page(f"pages/{page['module']}")
-            st.markdown("")  # Add spacing between categories
+                    # Toggle the collapsed state
+                    st.session_state.sidebar_collapsed[category_name] = not st.session_state.sidebar_collapsed[category_name]
+                    st.rerun()
+            
+            with col2:
+                # Show arrow indicator
+                arrow = "⬇️" if not st.session_state.sidebar_collapsed[category_name] else "➡️"
+                st.write(arrow)
+            
+            # Show pages if category is expanded
+            if not st.session_state.sidebar_collapsed[category_name]:
+                for page in pages:
+                    if st.button(
+                        f"  {page['name']}",  # Indent pages for hierarchy
+                        key=f"nav_{page['module']}", 
+                        use_container_width=True,
+                        help=f"Go to {page['name']}"
+                    ):
+                        st.switch_page(f"pages/{page['module']}")
+        
+        st.markdown("---")
+        
+        # Expand/Collapse All buttons
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("📂 Expand All", use_container_width=True, key="expand_all"):
+                for category in st.session_state.sidebar_collapsed:
+                    st.session_state.sidebar_collapsed[category] = False
+                st.rerun()
+        
+        with col2:
+            if st.button("📁 Collapse All", use_container_width=True, key="collapse_all"):
+                for category in st.session_state.sidebar_collapsed:
+                    st.session_state.sidebar_collapsed[category] = True
+                st.rerun()
         
         st.markdown("---")
         

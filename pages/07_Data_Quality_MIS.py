@@ -14,12 +14,21 @@ from sacco_core.config import ConfigManager
 from sacco_core.rbac import RBACManager
 from sacco_core.audit import AuditLogger
 from sacco_core.analytics.dq import DataQualityAnalyzer
+from sacco_core.sidebar import render_sidebar
 
 st.set_page_config(
     page_title="Data Quality MIS",
     page_icon="📋",
     layout="wide"
 )
+
+# Check authentication and render sidebar
+if not st.session_state.get('authenticated', False):
+    st.error("🔐 Please log in to access this page")
+    st.stop()
+
+# Render consistent sidebar and styling
+render_sidebar()
 
 class DataQualityMISPage:
     def __init__(self):
@@ -980,7 +989,7 @@ class DataQualityMISPage:
     
     def run(self):
         """Run the data quality MIS page"""
-        st.title("📋 Data Quality MIS")
+        st.title("📊 Data Quality MIS")
         
         st.markdown("""
         Comprehensive data quality management, monitoring, and improvement system. 

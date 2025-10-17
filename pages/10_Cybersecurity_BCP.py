@@ -9,6 +9,12 @@ import numpy as np
 from datetime import datetime, timedelta
 import json
 from typing import Dict, List, Any, Optional
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from sacco_core.sidebar import render_sidebar
 
 # Import with fallbacks for core modules
 try:
@@ -119,6 +125,14 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Check authentication and render sidebar
+if not st.session_state.get('authenticated', False):
+    st.error("🔐 Please log in to access this page")
+    st.stop()
+
+# Render consistent sidebar and styling
+render_sidebar()
 
 def main():
     """Cybersecurity and Business Continuity Dashboard"""

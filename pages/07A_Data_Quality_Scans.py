@@ -15,12 +15,21 @@ from sacco_core.config import ConfigManager
 from sacco_core.rbac import RBACManager
 from sacco_core.audit import AuditLogger
 from sacco_core.analytics.dq_scans import DataQualityScanner
+from sacco_core.sidebar import render_sidebar
 
 st.set_page_config(
     page_title="Data Quality Scans",
     page_icon="🔍",
     layout="wide"
 )
+
+# Check authentication and render sidebar
+if not st.session_state.get('authenticated', False):
+    st.error("🔐 Please log in to access this page")
+    st.stop()
+
+# Render consistent sidebar and styling
+render_sidebar()
 
 class DataQualityScansPage:
     def __init__(self):

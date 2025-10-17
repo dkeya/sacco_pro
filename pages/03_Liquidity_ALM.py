@@ -13,12 +13,21 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from sacco_core.config import ConfigManager
 from sacco_core.rbac import RBACManager
 from sacco_core.audit import AuditLogger
+from sacco_core.sidebar import render_sidebar
 
 st.set_page_config(
     page_title="Liquidity & ALM",
     page_icon="💧",
     layout="wide"
 )
+
+# Check authentication and render sidebar
+if not st.session_state.get('authenticated', False):
+    st.error("🔐 Please log in to access this page")
+    st.stop()
+
+# Render consistent sidebar and styling
+render_sidebar()
 
 class LiquidityALMPage:
     def __init__(self):
@@ -172,7 +181,7 @@ class LiquidityALMPage:
     
     def run(self):
         """Run the liquidity ALM page"""
-        st.title("Liquidity & Asset-Liability Management")
+        st.title("💧 Liquidity & Asset-Liability Management")
         
         self.render_liquidity_dashboard()
         st.markdown("---")

@@ -13,12 +13,21 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from sacco_core.config import ConfigManager
 from sacco_core.rbac import RBACManager
 from sacco_core.audit import AuditLogger
+from sacco_core.sidebar import render_sidebar
 
 st.set_page_config(
     page_title="Vintages & Roll Rates",
     page_icon="📊",
     layout="wide"
 )
+
+# Check authentication and render sidebar
+if not st.session_state.get('authenticated', False):
+    st.error("🔐 Please log in to access this page")
+    st.stop()
+
+# Render consistent sidebar and styling
+render_sidebar()
 
 class VintagesRollRatesPage:
     def __init__(self):
@@ -53,7 +62,7 @@ class VintagesRollRatesPage:
         return True
     
     def run(self):
-        st.title("Vintages & Roll Rates Analysis")
+        st.title("📉 Vintages & Roll Rates Analysis")
         st.info("This module will implement TRUE vintages & roll-rates using monthly state snapshots")
         
         # Placeholder for vintages analysis
