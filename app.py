@@ -46,6 +46,29 @@ hide_streamlit_style = """
             display: none;
         }
         
+        /* Sidebar content alignment */
+        .css-1d391kg {
+            text-align: left !important;
+        }
+        
+        .css-1lcbmhc {
+            text-align: left !important;
+        }
+        
+        .css-1v0mbdj {
+            text-align: left !important;
+        }
+        
+        /* Center only the user info section */
+        .user-info-center {
+            text-align: center;
+        }
+        
+        /* Left align all other sidebar content */
+        .sidebar-left-align {
+            text-align: left !important;
+        }
+        
         /* Optional: Additional customizations */
         .block-container {
             padding-top: 2rem;
@@ -75,6 +98,8 @@ hide_streamlit_style = """
             border-radius: 8px;
             padding: 0.5rem 1rem;
             font-weight: 500;
+            text-align: left !important;
+            justify-content: flex-start !important;
         }
         
         .stButton button:hover {
@@ -94,11 +119,28 @@ hide_streamlit_style = """
             padding: 0.5rem;
             margin-bottom: 0.5rem;
             border: 1px solid #e9ecef;
+            text-align: left !important;
         }
         
         /* Indented page buttons */
         .indented-button {
             margin-left: 1rem;
+            text-align: left !important;
+        }
+        
+        /* Left align all text in sidebar */
+        .css-1v0mbdj, .css-1lcbmhc, .css-1d391kg {
+            text-align: left !important;
+        }
+        
+        /* Left align metric labels and values */
+        [data-testid="stMetricLabel"], [data-testid="stMetricValue"], [data-testid="stMetricDelta"] {
+            text-align: left !important;
+        }
+        
+        /* Left align all streamlit text elements */
+        .stMarkdown, .stSubheader, .stCaption, .stText {
+            text-align: left !important;
         }
     </style>
 """
@@ -274,9 +316,9 @@ class SaccoApp:
         """, unsafe_allow_html=True)
         
         with st.sidebar:
-            # User info section
+            # User info section - Centered
             st.markdown(f"""
-            <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white; margin-bottom: 1rem;">
+            <div class="user-info-center" style="padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white; margin-bottom: 1rem;">
                 <h3>🏦 SACCO Pro</h3>
                 <p><strong>{st.session_state.user}</strong></p>
                 <p><em>{st.session_state.role} Role</em></p>
@@ -284,6 +326,9 @@ class SaccoApp:
             """, unsafe_allow_html=True)
             
             st.markdown("---")
+            
+            # Left-aligned navigation section
+            st.markdown('<div class="sidebar-left-align">', unsafe_allow_html=True)
             st.subheader("📊 Navigation")
             
             # Get page categories
@@ -301,8 +346,8 @@ class SaccoApp:
                 # Create a unique key for each category toggle
                 toggle_key = f"toggle_{category_name.replace(' ', '_').replace('&', 'and')}"
                 
-                # Toggle button with arrow indicator
-                col1, col2 = st.columns([3, 1])
+                # Toggle button with arrow indicator - Left aligned
+                col1, col2 = st.columns([4, 1])
                 with col1:
                     if st.button(
                         f"{category_name}", 
@@ -348,7 +393,7 @@ class SaccoApp:
             
             st.markdown("---")
             
-            # System info and logout
+            # System info and logout - Left aligned
             st.caption(f"Logged in as: {st.session_state.username}")
             st.caption(f"Session: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
             
@@ -360,6 +405,8 @@ class SaccoApp:
                 st.session_state.username = None
                 st.session_state.current_page = "dashboard"
                 st.rerun()
+            
+            st.markdown('</div>', unsafe_allow_html=True)
     
     def render_main(self):
         """Render main dashboard"""
